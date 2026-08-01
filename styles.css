@@ -391,6 +391,19 @@ svg { display: block; }
   border: 1.5px solid var(--border-strong);
 }
 
+.btn-ghost {
+  min-height: 44px;
+  margin-top: var(--space-3);
+  background: transparent;
+  color: var(--text-dim);
+  border: none;
+  font-size: 13.5px;
+  font-weight: 650;
+  box-shadow: none;
+}
+.btn-ghost svg { width: 16px; height: 16px; }
+.btn-ghost:active { background: var(--danger-soft); color: var(--danger); }
+
 .btn-block { width: 100%; }
 
 /* ==========================================================================

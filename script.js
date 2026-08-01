@@ -20,6 +20,8 @@
       "btn.save": "Save Car",
       "btn.saving": "Locating…",
       "btn.find": "Find Car",
+      "btn.clear": "Clear Parking Location",
+      "toast.cleared": "Saved location cleared",
       "section.quickStops": "Quick Stops",
       "toast.saved": "Car location saved",
       "toast.saveError": "Couldn't get your location",
@@ -53,6 +55,8 @@
       "btn.save": "Enregistrer",
       "btn.saving": "Localisation…",
       "btn.find": "Retrouver",
+      "btn.clear": "Effacer l'Emplacement",
+      "toast.cleared": "Emplacement effacé",
       "section.quickStops": "Arrêts Rapides",
       "toast.saved": "Emplacement enregistré",
       "toast.saveError": "Impossible d'obtenir ta position",
@@ -171,6 +175,7 @@
   const heroCoords = document.getElementById("heroCoords");
   const saveBtn = document.getElementById("saveBtn");
   const findBtn = document.getElementById("findBtn");
+  const clearBtn = document.getElementById("clearBtn");
 
   const CAR_KEY = "rt_car_location";
   const PRIMED_KEY = "rt_geo_primed";
@@ -203,6 +208,7 @@
       heroSub.textContent = t("car.notSaved");
       heroCoords.hidden = true;
       findBtn.disabled = true;
+      clearBtn.hidden = true;
       return;
     }
 
@@ -212,6 +218,7 @@
     heroCoords.hidden = false;
     heroCoords.textContent = `${car.lat.toFixed(5)}, ${car.lng.toFixed(5)}`;
     findBtn.disabled = false;
+    clearBtn.hidden = false;
   }
 
   /** Core geolocation call, shared by the direct and permission-primed paths. */
@@ -286,6 +293,13 @@
     }
     buzz();
     window.location.href = `https://www.google.com/maps/dir/?api=1&destination=${car.lat},${car.lng}`;
+  });
+
+  clearBtn.addEventListener("click", () => {
+    localStorage.removeItem(CAR_KEY);
+    refreshCarStatus();
+    showToast(t("toast.cleared"));
+    buzz(8);
   });
 
   // Keep the "X min ago" text fresh without a full re-render.
