@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Road Trip</title>
+<meta name="description" content="A one-tap dashboard for finding your car and the nearest gas, food, and rest stops on the road.">
+
+<!-- PWA + platform metadata -->
+<meta name="theme-color" content="#0B0E14" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F5F1E8" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Road Trip">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Offline banner, hidden by default -->
+<div class="net-banner" id="offlineBanner" role="status" hidden>
+  <span data-i18n="banner.offline">You're offline. This dashboard still works.</span>
+</div>
+
+<div class="app" id="app">
+
+  <!-- ============ HEADER ============ -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16.5V11l1.6-4.2A2 2 0 0 1 7.5 5.5h9a2 2 0 0 1 1.9 1.3L20 11v5.5"/><circle cx="7.5" cy="16.5" r="1.6"/><circle cx="16.5" cy="16.5" r="1.6"/><path d="M4 13h16"/></svg>
+      </span>
+      <div class="brand-text">
+        <span class="brand-name" data-i18n="appName">Road Trip</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="icon-btn" id="langToggle" type="button" aria-label="Switch language">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.8 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.8-3.8-9S9.5 5.6 12 3Z"/></svg>
+        <span class="lang-code" id="langCode">EN</span>
+      </button>
+      <button class="icon-btn" id="installBtn" type="button" aria-label="Install app" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- ---- Car status hero ---- -->
+    <section class="hero-card" id="heroCard" data-state="empty" aria-live="polite">
+      <div class="hero-glow" aria-hidden="true"></div>
+
+      <div class="hero-top">
+        <div class="hero-pin" id="heroPin" aria-hidden="true">
+          <span class="pin-pulse"></span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.4 7-12.4A7 7 0 0 0 5 9.6C5 14.6 12 22 12 22Z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
+        </div>
+        <div class="hero-status">
+          <p class="hero-title" data-i18n="car.title">Your Car</p>
+          <p class="hero-sub" id="heroSub" data-i18n="car.notSaved">No location saved yet</p>
+          <p class="hero-coords" id="heroCoords" hidden></p>
+        </div>
+      </div>
+
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="saveBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.4 7-12.4A7 7 0 0 0 5 9.6C5 14.6 12 22 12 22Z"/><circle cx="12" cy="9.5" r="2.4"/></svg>
+          <span data-i18n="btn.save">Save Car</span>
+        </button>
+        <button class="btn btn-secondary" id="findBtn" type="button" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span data-i18n="btn.find">Find Car</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ---- Quick stops grid ---- -->
+    <section class="stops-section" aria-labelledby="stopsHeading">
+      <h2 class="section-label" id="stopsHeading" data-i18n="section.quickStops">Quick Stops</h2>
+      <div class="stops-grid" id="stopsGrid"><!-- populated by JS --></div>
+    </section>
+
+    <!-- ---- Utility strip ---- -->
+    <section class="utility-bar" aria-label="Status">
+      <span class="status-pill" id="networkPill">
+        <span class="dot" id="networkDot" aria-hidden="true"></span>
+        <span id="networkText" data-i18n="status.online">Online</span>
+      </span>
+      <span class="status-pill" id="batteryPill" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="17" height="10" rx="2.5"/><path d="M21 10v4" stroke-linecap="round"/><rect id="batteryFillRect" x="4" y="9" width="9" height="6" rx="1" fill="currentColor" stroke="none"/></svg>
+        <span id="batteryText">100%</span>
+      </span>
+      <button class="status-pill status-pill-tap" id="emergencyBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4c-1.5 0-3 .6-4.2 1.7L9 7 4 12l1.3 1.3C6.4 12.1 8 10.5 9.5 9L11 7.5 14.5 4Z"/><path d="M17.7 19.5 19 18l-5-5-1.3 1.3C11.2 15.7 12.8 17.3 14 18.5L15.3 19.7A2 2 0 0 0 17.7 19.5Z"/><path d="m6 6 12 12"/></svg>
+        <span data-i18n="emergency.short">SOS</span>
+      </button>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ Toast ============ -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ============ Sheets (bottom sheets) ============ -->
+<div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
+
+<div class="sheet" id="permissionSheet" hidden role="dialog" aria-modal="true" aria-labelledby="permTitle">
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <h3 class="sheet-title" id="permTitle" data-i18n="permission.title">Before we save your spot</h3>
+  <p class="sheet-body" data-i18n="permission.body">We'll ask for your location just once, right now. It's stored only on this phone, never sent anywhere.</p>
+  <button class="btn btn-primary btn-block" id="permissionCta" type="button">
+    <span data-i18n="permission.cta">Allow &amp; Save</span>
+  </button>
+</div>
+
+<div class="sheet" id="emergencySheet" hidden role="dialog" aria-modal="true" aria-labelledby="emgTitle">
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <h3 class="sheet-title" id="emgTitle" data-i18n="emergency.title">Emergency numbers</h3>
+  <p class="sheet-sub" data-i18n="emergency.subtitle">Morocco · tap to call</p>
+  <div class="emergency-list" id="emergencyList"><!-- populated by JS --></div>
+</div>
+
+<div class="sheet" id="deniedSheet" hidden role="dialog" aria-modal="true" aria-labelledby="denTitle">
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <h3 class="sheet-title" id="denTitle" data-i18n="denied.title">Location access is off</h3>
+  <p class="sheet-body" data-i18n="denied.body">Turn on location for this site in your phone settings, then try again.</p>
+  <button class="btn btn-primary btn-block" id="deniedRetry" type="button">
+    <span data-i18n="denied.retry">Try Again</span>
+  </button>
+</div>
+
+<div class="sheet" id="installSheet" hidden role="dialog" aria-modal="true" aria-labelledby="insTitle">
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <h3 class="sheet-title" id="insTitle" data-i18n="install.title">Install Road Trip</h3>
+  <p class="sheet-body" id="installBody" data-i18n="install.body">Add this to your home screen for one-tap access, even offline.</p>
+  <button class="btn btn-primary btn-block" id="installCta" type="button">
+    <span data-i18n="install.cta">Install</span>
+  </button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

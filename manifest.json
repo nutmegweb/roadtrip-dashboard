@@ -1,0 +1,25 @@
+{
+  "name": "Road Trip Dashboard",
+  "short_name": "Road Trip",
+  "description": "Save where you parked and find gas, food, and rest stops in one tap.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0D13",
+  "theme_color": "#0A0D13",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
