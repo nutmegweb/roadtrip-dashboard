@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Trip Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            font-size: 32px;
+        }
+
+        .button {
+            display: block;
+            margin: 15px auto;
+            padding: 20px;
+            max-width: 350px;
+            background: white;
+            border-radius: 15px;
+            text-decoration: none;
+            color: black;
+            font-size: 22px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+
+        .button:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🚗 Road Trip</h1>
+
+<a class="button" href="https://www.google.com/maps/search/gas+station">
+⛽ Gas Station
+</a>
+
+<a class="button" href="https://www.google.com/maps/search/halal+restaurant">
+🍗 Halal Restaurant
+</a>
+
+<a class="button" href="https://www.google.com/maps/search/supermarket">
+🛒 Supermarket
+</a>
+
+<a class="button" href="https://www.google.com/maps/search/parking">
+🅿️ Parking
+</a>
+
+<a class="button" href="https://www.google.com/maps/search/coffee">
+☕ Coffee
+</a>
+
+<a class="button" href="https://www.google.com/maps/search/hospital">
+🏥 Hospital
+</a>
+
+</body>
+</html>
